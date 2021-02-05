@@ -1,5 +1,6 @@
 package org.iesfm.bank;
 
+import org.iesfm.bank.exceptions.AccountNotFoundException;
 import org.iesfm.bank.exceptions.NotEnoughBalanceException;
 
 import java.util.Arrays;
@@ -15,7 +16,7 @@ public class Bank implements IBank {
     }
 
     @Override
-    public void withdraw(String nif, String iban, double amount) throws NotEnoughBalanceException  {
+    public void withdraw(String nif, String iban, double amount) throws NotEnoughBalanceException, AccountNotFoundException {
         Client client = findClient(nif);
         if(client != null) {
             client.withdraw(iban, amount);
@@ -25,7 +26,7 @@ public class Bank implements IBank {
     }
 
     @Override
-    public void transfer(String nif, String ibanOrigin, String ibanDestination, double amount) {
+    public void transfer(String nif, String ibanOrigin, String ibanDestination, double amount) throws AccountNotFoundException, NotEnoughBalanceException {
         Client client = findClient(nif);
         if(client != null) {
             client.transfer(ibanOrigin, ibanDestination, amount);
@@ -33,6 +34,7 @@ public class Bank implements IBank {
             System.out.println("No existe el cliente con nif " + nif);
         }
     }
+
 
     private Client findClient(String nif) {
         Client result = null;

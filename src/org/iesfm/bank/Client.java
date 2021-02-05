@@ -1,5 +1,6 @@
 package org.iesfm.bank;
 
+import org.iesfm.bank.exceptions.AccountNotFoundException;
 import org.iesfm.bank.exceptions.NotEnoughBalanceException;
 
 import java.util.Arrays;
@@ -18,7 +19,7 @@ public class Client {
         this.accounts = accounts;
     }
 
-    public void withdraw(String iban, double amount) throws NotEnoughBalanceException {
+    public void withdraw(String iban, double amount) throws NotEnoughBalanceException, AccountNotFoundException {
         Account account = findAccount(iban);
         if (account != null) {
             account.withdraw(amount);
@@ -27,27 +28,27 @@ public class Client {
         }
     }
 
-    public void transfer(String ibanOrigin, String ibanDestination, double amount) {
+    public void transfer(String ibanOrigin, String ibanDestination, double amount) throws AccountNotFoundException, NotEnoughBalanceException{
         Account accountOrigin = findAccount(ibanOrigin);
         Account accountDestination = findAccount(ibanDestination);
         if (accountOrigin != null && accountDestination != null) {
-            try {
                 accountOrigin.withdraw(amount);
                 accountDestination.deposit(amount);
-            } catch (NotEnoughBalanceException e) {
-                System.out.println("No se ha  podido realizar la transferencia, saldo insuficiente");
-            }
+
         } else {
             System.out.println("No existe una cuenta con iban ");
         }
     }
 
-    private Account findAccount(String iban) {
+    private Account findAccount(String iban) throws AccountNotFoundException{
         Account result = null;
         for (Account account : accounts) {
             if (account.getIban().equals(iban)) {
                 result = account;
             }
+        }
+        if (result == null){
+            throw new AccountNotFoundException();
         }
         return result;
     }
@@ -98,4 +99,6 @@ public class Client {
         result = 31 * result + Arrays.hashCode(accounts);
         return result;
     }
+
+
 }
